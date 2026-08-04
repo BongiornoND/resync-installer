@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Install RESYNC Client</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="win">
+
+    <!-- 1a: Welcome -->
+    <section id="screen-welcome" class="screen">
+      <div class="body body-center">
+        <svg width="150" height="30" viewBox="0 0 321.04 65.52" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#0f1313" d="M0,60.15V5.61h25.63c6,0,10.75,1.56,14.26,4.75,3.58,3.12,5.38,7.17,5.38,12.08,0,7.09-3.97,12.78-10.6,15.35l14.18,22.36h-16.13l-13.09-20.8h-5.61v20.8H0ZM14.02,27.89h10.83c3.82,0,6.23-1.95,6.23-5.14s-2.42-5.3-6.23-5.3h-10.83s0,10.44,0,10.44Z"></path>
+          <path fill="#0f1313" d="M55.31,60.15V5.61h41.45v12.31h-27.42v8.96h21.81v11.84h-21.81v9.12h28.05v12.31h-42.08Z"></path>
+          <path fill="#0f1313" d="M176.84,60.15v-24.15l-20.96-30.39h15.97l12.15,18,12.23-18h15.58l-20.96,30.07v24.46h-14.02,0Z"></path>
+          <path fill="#0f1313" d="M217.43,60.15V5.61h12l23.84,30V5.61h13.71v54.54h-11.61l-24.15-30.15v30.15h-13.79Z"></path>
+          <path fill="#0f1313" d="M284.35,53.29c-5.77-5.3-8.65-12.08-8.65-20.41s2.88-15.11,8.57-20.41c5.77-5.3,13.01-7.95,21.74-7.95,5.14,0,9.82,1.01,14.1,3.12v13.79c-4.28-2.65-8.88-3.97-13.95-3.97-4.6,0-8.42,1.48-11.45,4.36-3.04,2.88-4.6,6.62-4.6,11.06s1.56,8.26,4.67,11.14c3.19,2.88,7.17,4.28,11.92,4.28,5.77,0,10.52-1.48,14.34-4.36v13.87c-4.44,2.26-9.43,3.43-14.96,3.43-8.73,0-15.97-2.65-21.74-7.95h0Z"></path>
+          <path fill="oklch(0.5 0.09 205)" d="M143.01,27.9l-15.87,10.25c5.7,1.92,8.91,2.96,8.91,5.53,0,3.28-3.19,4.88-9.49,4.88-2.16,0-4.4-.26-6.72-.74l.64-4.67-17.34,8.2,14.28,14.17.45-3.31c2.92.53,6.01.81,9.31.81,7.45,0,13.57-1.77,18.27-5.41s7.1-8.43,7.1-14.55c0-6.92-3.26-11.65-9.54-15.15h0Z"></path>
+          <path fill="oklch(0.5 0.09 205)" d="M154.25,14.17l-14.28-14.17-.62,4.54c-2-.27-4.04-.41-6.12-.41-14.9,0-24.4,6.65-24.4,18.63,0,8.64,4.66,12.84,10.95,15.97l4.56-2.94,11.11-7.18c-4.79-1.56-10.2-3.69-10.2-5.93,0-2.75,2.75-4.08,8.16-4.08,1.31,0,2.64.1,3.99.27l-.48,3.51,17.34-8.2h-.01Z"></path>
+        </svg>
+        <div id="welcome-text" class="welcome-text">Checking for the latest version…</div>
+      </div>
+      <div class="footer">
+        <div class="btn btn-secondary" id="welcome-cancel-btn">Cancel</div>
+        <div class="btn btn-primary" id="welcome-continue-btn" disabled>Continue</div>
+      </div>
+    </section>
+
+    <!-- 1b: Choose install location -->
+    <section id="screen-location" class="screen" hidden>
+      <div class="body">
+        <div>
+          <div class="title">Choose install location</div>
+          <div class="subtitle">Select where RESYNC Client should be installed.</div>
+        </div>
+        <div class="path-row">
+          <div id="location-path" class="path-field"></div>
+          <div class="btn btn-secondary" id="location-browse-btn">Browse&hellip;</div>
+        </div>
+        <div class="space-box">
+          <div class="space-row"><span class="k">Space required</span><span id="space-required" class="v">&mdash;</span></div>
+          <div class="space-row"><span class="k">Space available</span><span id="space-available" class="v">&mdash;</span></div>
+        </div>
+        <div id="space-warning" class="space-warning" hidden>Not enough free space at this location.</div>
+        <label class="checkbox-row">
+          <input type="checkbox" id="location-shortcut-checkbox" checked />
+          <span>Create a Desktop shortcut</span>
+        </label>
+      </div>
+      <div class="footer">
+        <div class="btn btn-secondary" id="location-back-btn">Back</div>
+        <div class="btn btn-primary" id="location-install-btn">Install</div>
+      </div>
+    </section>
+
+    <!-- 1c: Install progress + log -->
+    <section id="screen-progress" class="screen" hidden>
+      <div class="body" style="gap:18px">
+        <div style="text-align:center">
+          <div class="title">Installing RESYNC Client&hellip;</div>
+          <div class="subtitle">Downloading and extracting the latest release</div>
+        </div>
+        <div>
+          <div class="progress-track">
+            <div id="progress-fill" class="progress-fill" style="width:0%"></div>
+          </div>
+          <div class="progress-meta">
+            <span id="progress-label">Starting&hellip;</span><span id="progress-pct">0%</span>
+          </div>
+        </div>
+        <div>
+          <div class="log-header">
+            <span class="log-title">Installation log</span>
+            <span class="log-copy" id="log-copy-btn">Copy log</span>
+          </div>
+          <div id="log-panel" class="log-panel"></div>
+        </div>
+        <div id="progress-eta" class="progress-eta"></div>
+      </div>
+      <div class="footer">
+        <div class="btn btn-secondary" id="progress-cancel-btn">Cancel</div>
+      </div>
+    </section>
+
+    <!-- 1d: Success -->
+    <section id="screen-success" class="screen" hidden>
+      <div class="body body-center" style="gap:18px">
+        <div class="icon-circle icon-circle-success">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="oklch(0.45 0.1 150)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div>
+          <div class="title">Installation complete</div>
+          <div id="success-subtitle" class="subtitle" style="max-width:360px">RESYNC Client is ready. Sign in to connect your workspace and start syncing.</div>
+        </div>
+        <label class="checkbox-row">
+          <input type="checkbox" id="success-launch-checkbox" checked />
+          <span>Launch RESYNC Client</span>
+        </label>
+      </div>
+      <div class="footer">
+        <div class="btn btn-primary" id="success-finish-btn">Finish</div>
+      </div>
+    </section>
+
+    <!-- 1e: Failure -->
+    <section id="screen-failure" class="screen" hidden>
+      <div class="body" style="gap:18px">
+        <div class="body-center" style="gap:14px">
+          <div class="icon-circle icon-circle-fail">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="oklch(0.5 0.15 25)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </div>
+          <div>
+            <div class="title">Installation failed</div>
+            <div class="subtitle" style="max-width:380px">RESYNC Client couldn't finish installing. Nothing else was changed on your system.</div>
+          </div>
+        </div>
+        <div id="failure-error" class="failure-error"></div>
+      </div>
+      <div class="footer">
+        <div class="btn btn-secondary" id="failure-log-btn">View log</div>
+        <div class="btn btn-secondary" id="failure-relocate-btn">Choose new location</div>
+        <div class="btn btn-primary" id="failure-retry-btn">Try Again</div>
+      </div>
+    </section>
+
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

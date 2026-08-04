@@ -1,0 +1,88 @@
+@font-face { font-family: 'Geoform'; src: url('fonts/Geoform-Regular.otf') format('opentype'); font-weight: 400; font-style: normal; }
+@font-face { font-family: 'Geoform'; src: url('fonts/Geoform-Medium.otf') format('opentype'); font-weight: 600; font-style: normal; }
+@font-face { font-family: 'Geoform'; src: url('fonts/Geoform-Bold.otf') format('opentype'); font-weight: 700; font-style: normal; }
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; height: 100%; background: #eef3f4; font-family: 'Geoform', sans-serif;
+  overflow: hidden;
+}
+button { font-family: inherit; }
+
+.win {
+  width: 560px; height: 100vh; background: #f7fafa; display: flex; flex-direction: column;
+}
+
+.screen { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+
+.body {
+  padding: 32px; display: flex; flex-direction: column; gap: 20px; flex: 1; min-height: 0; overflow-y: auto;
+}
+.body-center { align-items: center; justify-content: center; text-align: center; }
+
+.title { font-weight: 700; font-size: 17px; color: #0f1313; }
+.subtitle { font-size: 13px; color: #75868a; margin-top: 5px; }
+.welcome-text { font-size: 14px; color: #2b2f30; line-height: 1.6; max-width: 400px; }
+
+.footer {
+  padding: 16px 32px; border-top: 1px solid rgba(117, 134, 138, 0.25);
+  display: flex; justify-content: flex-end; gap: 10px; flex: 0 0 auto;
+}
+
+.btn {
+  display: flex; align-items: center; justify-content: center; font-size: 13.5px; font-weight: 600;
+  padding: 10px 20px; border-radius: 6px; cursor: pointer; user-select: none;
+}
+.btn-primary { background: oklch(0.5 0.09 205); color: #fff; }
+.btn-primary:hover { opacity: 0.92; }
+.btn-primary[disabled] { opacity: 0.45; cursor: default; pointer-events: none; }
+.btn-secondary { background: #ffffff; border: 1px solid rgba(117, 134, 138, 0.4); color: #2b2f30; }
+.btn-secondary:hover { background: #f3f9fa; }
+
+.path-row { display: flex; gap: 10px; }
+.path-field {
+  flex: 1; font-size: 13.5px; font-family: ui-monospace, Menlo, monospace; color: #0f1313;
+  background: #ffffff; border: 1px solid rgba(117, 134, 138, 0.4); border-radius: 6px;
+  padding: 11px 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.space-box {
+  border: 1px solid rgba(117, 134, 138, 0.25); border-radius: 8px; padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.space-row { display: flex; justify-content: space-between; font-size: 13px; }
+.space-row .k { color: #75868a; }
+.space-row .v { color: #1c2223; font-weight: 500; }
+.space-warning { font-size: 12.5px; color: oklch(0.5 0.15 25); margin-top: -8px; }
+
+.checkbox-row { display: flex; align-items: center; gap: 9px; cursor: pointer; font-size: 13px; color: #2b2f30; }
+.checkbox-row input[type="checkbox"] {
+  width: 16px; height: 16px; accent-color: oklch(0.5 0.09 205); flex: 0 0 auto; cursor: pointer;
+}
+
+.progress-track { height: 8px; border-radius: 4px; background: #e4ebec; overflow: hidden; }
+.progress-fill { height: 100%; background: oklch(0.5 0.09 205); transition: width 0.2s ease; }
+.progress-meta { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12.5px; color: #75868a; }
+
+.log-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.log-title { font-size: 12.5px; font-weight: 600; color: #2b2f30; }
+.log-copy { font-size: 12px; color: oklch(0.5 0.09 205); font-weight: 600; cursor: pointer; }
+.log-panel {
+  background: #0f1313; border-radius: 8px; padding: 14px 16px;
+  font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; line-height: 1.7; color: #c9d3d4;
+  height: 150px; overflow-y: auto; white-space: pre-wrap;
+}
+.log-line-time { color: #75868a; }
+.progress-eta { font-size: 12px; color: #a3adaf; font-family: ui-monospace, Menlo, monospace; text-align: center; }
+
+.icon-circle {
+  width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+}
+.icon-circle-success { background: oklch(0.94 0.04 150); }
+.icon-circle-fail { background: oklch(0.94 0.05 25); }
+
+.failure-error {
+  background: oklch(0.97 0.02 25); border: 1px solid oklch(0.88 0.05 25); border-radius: 8px;
+  padding: 14px 16px; font-family: ui-monospace, Menlo, monospace; font-size: 12px;
+  color: oklch(0.4 0.1 25); line-height: 1.7; white-space: pre-wrap;
+}

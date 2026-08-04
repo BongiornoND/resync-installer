@@ -1,0 +1,33 @@
+{
+  "name": "resync-installer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Installer for the Resync desktop client — downloads and installs the latest release from GitHub.",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "package:win": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "^32.1.2",
+    "electron-builder": "^25.1.8",
+    "extract-zip": "^2.0.1"
+  },
+  "build": {
+    "appId": "com.resync.installer",
+    "productName": "Resync Installer",
+    "asar": true,
+    "files": [
+      "src/**/*",
+      "renderer/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "portable",
+      "icon": "build/icon.ico"
+    },
+    "portable": {
+      "artifactName": "resync-installer.exe"
+    }
+  }
+}
