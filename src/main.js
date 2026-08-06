@@ -6,7 +6,7 @@ const https = require('https');
 const { execFile } = require('child_process');
 const extractZip = require('extract-zip');
 
-const GITHUB_REPO = 'BongiornoND/cad-sync';
+const GITHUB_REPO = 'BongiornoND/resync';
 const DEFAULT_INSTALL_DIR = path.join(os.homedir(), 'AppData', 'Local', 'Resync');
 
 let mainWindow;
