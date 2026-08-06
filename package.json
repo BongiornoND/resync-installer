@@ -8,10 +8,12 @@
     "start": "electron .",
     "package:win": "electron-builder --win portable"
   },
+  "dependencies": {
+    "extract-zip": "^2.0.1"
+  },
   "devDependencies": {
     "electron": "^32.1.2",
-    "electron-builder": "^25.1.8",
-    "extract-zip": "^2.0.1"
+    "electron-builder": "^25.1.8"
   },
   "build": {
     "appId": "com.resync.installer",
