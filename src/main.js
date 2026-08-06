@@ -209,7 +209,12 @@ ipcMain.handle('installer:cancelInstall', async () => {
 // Windows has no built-in Node API for .lnk creation — WScript.Shell's
 // COM object via PowerShell is the standard, dependency-free way to do it.
 function createDesktopShortcut(targetExe) {
-  const desktop = path.join(os.homedir(), 'Desktop');
+  // app.getPath('desktop') resolves the real Windows Known Folder path —
+  // os.homedir() + 'Desktop' assumes the default location, which breaks
+  // for anyone (like OneDrive users) whose Desktop has been relocated by
+  // Known Folder Move; that leaves no Desktop folder at that assumed path
+  // at all, so the shortcut save fails with DirectoryNotFoundException.
+  const desktop = app.getPath('desktop');
   const shortcutPath = path.join(desktop, 'RESYNC Client.lnk');
   const script = [
     '$WshShell = New-Object -ComObject WScript.Shell',
