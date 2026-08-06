@@ -14,6 +14,7 @@ button { font-family: inherit; }
 }
 
 .screen { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.screen[hidden] { display: none; }
 
 .body {
   padding: 32px; display: flex; flex-direction: column; gap: 20px; flex: 1; min-height: 0; overflow-y: auto;
