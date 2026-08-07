@@ -1,6 +1,6 @@
 {
   "name": "resync-installer",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": true,
   "description": "Installer for the Resync desktop client — downloads and installs the latest release from GitHub.",
   "main": "src/main.js",
