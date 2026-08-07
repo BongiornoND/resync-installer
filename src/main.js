@@ -12,6 +12,47 @@ const DEFAULT_INSTALL_DIR = path.join(os.homedir(), 'AppData', 'Local', 'Resync'
 let mainWindow;
 let currentDownloadRequest = null;
 
+// Supports two entry points into "update an existing install": someone
+// double-clicks this installer standalone (no args — the default install
+// location is checked directly, see findExistingInstall below), or the
+// Resync client itself launches it with these flags when the user clicks
+// "Update now" in-app, pointing at wherever it's actually installed rather
+// than assuming the default location.
+function parseCliArgs(argv) {
+  // A packaged app's argv has no separate "electron binary" + "script"
+  // prefix the way `electron .` in dev does — real args start one
+  // position earlier.
+  const args = argv.slice(app.isPackaged ? 1 : 2);
+  const parsed = { update: false, target: null, relaunch: false };
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '--update') parsed.update = true;
+    else if (args[i] === '--target') parsed.target = args[++i];
+    else if (args[i] === '--relaunch') parsed.relaunch = true;
+  }
+  return parsed;
+}
+const cliArgs = parseCliArgs(process.argv);
+
+// Looks in the given directory (or the default install location if none
+// given) for an existing install, so both entry points above land on the
+// same "offer to update instead of install fresh" behavior.
+function findExistingInstall(targetDir) {
+  const dir = targetDir || DEFAULT_INSTALL_DIR;
+  const exePath = path.join(dir, 'resync.exe');
+  if (!fs.existsSync(exePath)) return null;
+  let currentVersion = null;
+  try {
+    // Unpacked electron-packager output (no asar) — package.json sits
+    // right there as a plain file.
+    const pkg = JSON.parse(fs.readFileSync(path.join(dir, 'resources', 'app', 'package.json'), 'utf8'));
+    currentVersion = pkg.version || null;
+  } catch {
+    // Installed but version unreadable — still a real existing install,
+    // just without a "currently vX" to show.
+  }
+  return { dir, currentVersion };
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 560,
@@ -89,6 +130,8 @@ ipcMain.handle('installer:getLatestRelease', async () => {
       assetUrl: asset.browser_download_url,
       assetSize: asset.size,
       defaultInstallDir: DEFAULT_INSTALL_DIR,
+      existingInstall: findExistingInstall(cliArgs.target),
+      relaunch: cliArgs.relaunch,
     };
   } catch (err) {
     return { ok: false, error: err.message };
@@ -161,6 +204,25 @@ function downloadWithProgress(url, destPath, totalSize) {
   });
 }
 
+// When updating an existing install, the caller (either this installer's
+// own "close Resync first" nudge, or the app quitting itself before
+// launching this) may not have fully released its file locks the instant
+// extraction starts — retry through EBUSY/EPERM for a few seconds rather
+// than failing the whole update over a timing race.
+async function extractWithRetry(zipPath, dir, attempts = 8, delayMs = 500) {
+  for (let i = 0; i < attempts; i++) {
+    try {
+      await extractZip(zipPath, { dir });
+      return;
+    } catch (err) {
+      const busy = err.code === 'EBUSY' || err.code === 'EPERM' || /EBUSY|EPERM/.test(err.message || '');
+      if (i === attempts - 1 || !busy) throw err;
+      sendLog(`Waiting for RESYNC Client to close… (${i + 1}/${attempts})`);
+      await new Promise((r) => setTimeout(r, delayMs));
+    }
+  }
+}
+
 ipcMain.handle('installer:install', async (_event, { installDir, createShortcut }) => {
   const tmpZipPath = path.join(app.getPath('temp'), `resync-install-${Date.now()}.zip`);
   try {
@@ -178,7 +240,7 @@ ipcMain.handle('installer:install', async (_event, { installDir, createShortcut 
 
     sendLog(`Extracting to ${installDir}`);
     sendProgress(0.9, 'Extracting…');
-    await extractZip(tmpZipPath, { dir: installDir });
+    await extractWithRetry(tmpZipPath, installDir);
     sendLog('Extraction complete');
 
     const exePath = path.join(installDir, 'resync.exe');

@@ -30,6 +30,9 @@ const state = {
   freeBytes: null,
   exePath: null,
   log: [],
+  isUpdate: false,
+  previousVersion: null,
+  relaunch: false,
 };
 
 // A packed zip generally unpacks to a few times its compressed size — this
@@ -59,18 +62,41 @@ async function initWelcome() {
   }
   state.version = res.version;
   state.assetSize = res.assetSize;
-  state.installDir = res.defaultInstallDir;
-  document.getElementById('welcome-text').textContent =
-    `This will install the RESYNC Client (${res.version}) on your computer. You'll be able to sync CAD files, images, and documents across your team's projects.`;
+  state.relaunch = !!res.relaunch;
+
+  if (res.existingInstall) {
+    // Already installed — this is an update, not a fresh install: reuse
+    // the existing location, skip the shortcut prompt (it's already
+    // there), and skip straight past the location screen entirely.
+    state.isUpdate = true;
+    state.installDir = res.existingInstall.dir;
+    state.previousVersion = res.existingInstall.currentVersion;
+    state.createShortcut = false;
+    document.title = 'Update RESYNC Client';
+    document.getElementById('welcome-text').textContent = state.previousVersion
+      ? `This will update RESYNC Client from ${state.previousVersion} to ${res.version} at ${state.installDir}.`
+      : `This will update RESYNC Client to ${res.version} at ${state.installDir}.`;
+  } else {
+    state.isUpdate = false;
+    state.installDir = res.defaultInstallDir;
+    document.getElementById('welcome-text').textContent =
+      `This will install the RESYNC Client (${res.version}) on your computer. You'll be able to sync CAD files, images, and documents across your team's projects.`;
+  }
+
   const continueBtn = document.getElementById('welcome-continue-btn');
+  continueBtn.textContent = state.isUpdate ? 'Update' : 'Continue';
   continueBtn.removeAttribute('disabled');
 }
 
 document.getElementById('welcome-cancel-btn').addEventListener('click', () => window.api.cancel());
 document.getElementById('welcome-continue-btn').addEventListener('click', () => {
   if (document.getElementById('welcome-continue-btn').hasAttribute('disabled')) return;
-  showScreen('location');
-  refreshLocationScreen();
+  if (state.isUpdate) {
+    runInstall();
+  } else {
+    showScreen('location');
+    refreshLocationScreen();
+  }
 });
 
 // --- Choose location ---
@@ -147,15 +173,28 @@ window.api.onProgress(({ fraction, label }) => {
 async function runInstall() {
   showScreen('progress');
   resetProgressScreen();
+  document.querySelector('#screen-progress .title').textContent = state.isUpdate
+    ? 'Updating RESYNC Client…'
+    : 'Installing RESYNC Client…';
   const res = await window.api.install(state.installDir, state.createShortcut);
   if (res.ok) {
     state.version = res.version;
     state.exePath = res.exePath;
-    document.getElementById('success-subtitle').textContent =
-      `RESYNC Client ${res.version} is ready. Sign in to connect your workspace and start syncing.`;
+    document.getElementById('success-title').textContent = state.isUpdate ? 'Update complete' : 'Installation complete';
+    document.getElementById('success-subtitle').textContent = state.isUpdate
+      ? `RESYNC Client is now on ${res.version}.`
+      : `RESYNC Client ${res.version} is ready. Sign in to connect your workspace and start syncing.`;
     showScreen('success');
+    // Reached only via the app's own "Update now" button — the user
+    // already made the one decision this whole screen exists to confirm,
+    // so there's nothing left to ask; relaunch and close on our own.
+    if (state.isUpdate && state.relaunch) {
+      document.getElementById('success-launch-checkbox').checked = true;
+      setTimeout(() => document.getElementById('success-finish-btn').click(), 1200);
+    }
   } else {
     document.getElementById('failure-error').textContent = res.error;
+    document.getElementById('failure-relocate-btn').hidden = state.isUpdate;
     showScreen('failure');
   }
 }
